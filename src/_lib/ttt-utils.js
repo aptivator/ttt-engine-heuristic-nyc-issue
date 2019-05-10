@@ -1,6 +1,5 @@
 import {wins, moves} from './vars';
 import utils         from './utils';
-import tttUtils      from './ttt-utils';
 
 export default {
   blanks(grid) {
@@ -18,7 +17,7 @@ export default {
     typeMoves = typeMoves.filter(cell => !grid[cell]);
 
     if(typeMoves.length) {
-      let potentials = tttUtils.potentials(grid, ch, 1);
+      let potentials = this.potentials(grid, ch, 1);
       let movesInOnes = potentials.reduce((movesInOnes, potential) => {
         for(var cell of typeMoves) {
           if(potential.blanks.includes(cell)) {

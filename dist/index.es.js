@@ -1,17 +1,3 @@
-function _typeof(obj) {
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
-}
-
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
 }
@@ -69,30 +55,9 @@ var oppositeCorners = {
 };
 
 var utils = {
-  isObjectLike: function isObjectLike(o) {
-    return o !== null && _typeof(o) === 'object';
-  },
-  isRegularObject: function isRegularObject(o) {
-    if (!this.isObjectLike(o) || this.toString(o) !== '[object Object]') {
-      return false;
-    }
-
-    if (Object.getPrototypeOf(o) === null) {
-      return true;
-    }
-
-    for (var proto = o; Object.getPrototypeOf(proto) !== null;) {
-      proto = Object.getPrototypeOf(proto);
-    }
-
-    return Object.getPrototypeOf(o) === proto;
-  },
   pickRandom: function pickRandom(arr) {
     var index = Math.floor(Math.random() * arr.length);
     return arr[index];
-  },
-  toString: function toString(value) {
-    return Object.prototype.toString.call(value);
   }
 };
 
@@ -113,7 +78,7 @@ var tttUtils = {
     });
 
     if (typeMoves.length) {
-      var potentials = tttUtils.potentials(grid, ch, 1);
+      var potentials = this.potentials(grid, ch, 1);
       var movesInOnes = potentials.reduce(function (movesInOnes, potential) {
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -389,12 +354,12 @@ function pickRandomMove(grid) {
 }
 
 function ttt(grid, ch) {
-  var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 8;
+  var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 9;
   var playActions = [checkForWinOrDraw, determineWinningMove, determineWinningMove, findFork, blockForks, playCenter, playOppositeCorner, playCorner, playSide];
   var actionsToPlayAsOpponent = [2, 4].map(function (id) {
     return id >= level ? id++ : id;
   });
-  playActions.splice(level + 1, 0, pickRandomMove);
+  playActions.splice(level, 0, pickRandomMove);
   grid = tttUtils.normalizeGrid(grid);
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
