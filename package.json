@@ -14,10 +14,10 @@
   "license": "",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/aptivator/ttt-engine-heuristic.git"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/aptivator/ttt-engine-heuristic/issues"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",
