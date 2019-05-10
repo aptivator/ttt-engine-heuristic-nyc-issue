@@ -1,0 +1,37 @@
+import {expect}            from 'chai';
+import {checkForWinOrDraw} from '../../src/play-actions/00-check-for-win-or-draw';
+
+describe('hasWin() play action', () => {
+  it('finds a win', () => {
+    let grid = [
+      'x', 'x', 'x',
+      null, null, null,
+      null, null, null
+    ];
+    
+    let check = checkForWinOrDraw(grid, 'x');
+    expect(check).to.deep.equal({ch: 'x', win: [0, 1, 2]});
+  });  
+  
+  it('diagnoses a draw', () => {
+    let grid = [
+      'x', 'o', 'x',
+      'o', 'x', 'o',
+      'o', 'x', 'o'
+    ];
+    
+    let check = checkForWinOrDraw(grid, 'x');
+    expect(check).to.deep.equal({ch: 'x', draw: true});
+  });
+  
+  it('returns undefined when there is no win or draw', () => {
+    let grid = [
+      'x', 'x', 'o',
+      null, null, 'o',
+      null, null, 'x'
+    ];
+    
+    let result = checkForWinOrDraw(grid, 'x');
+    expect(result).to.equal(undefined);
+  });
+});
