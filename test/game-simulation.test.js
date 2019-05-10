@@ -2,7 +2,7 @@ import _        from 'lodash';
 import {expect} from 'chai';
 import {ttt}    from '../src';
 
-describe('ttt() two-engine game ', () => {
+describe('two-player game simulation', () => {
   it('perfect player beats lower-level player and perfect players draw', () => {
     let results = {
       o: {},
@@ -10,7 +10,7 @@ describe('ttt() two-engine game ', () => {
     };
     let even = _.partial(ttt, _, 'x');
     
-    for(let level = 1; level < 9; level++) {
+    for(let level = 1; level < 10; level++) {
       let odd = _.partial(ttt, _, 'o', level);
       
       results.x[level] = {wins: 0};
