@@ -95,8 +95,8 @@ describe('tic-tac-toe utilities library', () => {
     
     grid = tttUtils.normalizeGrid(grid);
     expect(grid).to.deep.equal(gridArr);
-    gridArr = tttUtils.normalizeGrid(gridArr);
-    expect(gridArr).to.equal(gridArr);
+    let _gridArr = tttUtils.normalizeGrid(gridArr);
+    expect(_gridArr).to.equal(gridArr);
   });
   
   it('assembles potential wins', () => {
