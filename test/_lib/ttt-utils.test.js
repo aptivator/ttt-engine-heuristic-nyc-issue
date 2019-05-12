@@ -32,7 +32,8 @@ describe('tic-tac-toe utilities library', () => {
       null, 'x', 'o'
     ];
     
-    let moves = generateUniqueMoves(tttUtils.findMoveByType, grid, 'x', 'corners');
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'corners');
     expect(moves).to.have.members([2, 6]);
   });
   
@@ -43,7 +44,8 @@ describe('tic-tac-toe utilities library', () => {
       null, null, null
     ];
     
-    let moves = generateUniqueMoves(tttUtils.findMoveByType, grid, 'x', 'sides');
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides');
     expect(moves).to.have.members([1, 5]);
   });
   
@@ -54,7 +56,8 @@ describe('tic-tac-toe utilities library', () => {
       'x', null, 'o'
     ];
     
-    let moves = generateUniqueMoves(tttUtils.findMoveByType, grid, 'x', 'sides');
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides');
     expect(moves).to.have.members([1, 7]);
   });
   
