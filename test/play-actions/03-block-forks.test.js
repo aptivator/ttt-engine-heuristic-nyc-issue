@@ -25,6 +25,17 @@ describe('blockForks() play action', () => {
     expect(moves).to.have.members([1, 3, 5, 7]);
   });
   
+  it('blocks two intersections by the same side attack (given the same board)', () => {
+    let grid = [
+      'x', null, null,
+      null, 'o', null,
+      null, null, 'x'
+    ];
+    
+    let moves = generateUniqueMoves(blockForks, grid, 'x', false);
+    expect(moves).to.deep.equal([1]);
+  });
+  
   it('blocks more than two intersections by random corner attack', () => {
     let grid = [
       'o', null, null,

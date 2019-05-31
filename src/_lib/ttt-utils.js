@@ -12,7 +12,7 @@ export default {
     }, []);
   },
   
-  findMoveByType(grid, ch, moveType) {
+  findMoveByType(grid, ch, moveType, random) {
     let {[moveType]: typeMoves} = moves;
     typeMoves = typeMoves.filter(cell => !grid[cell]);
 
@@ -35,28 +35,7 @@ export default {
       }
     }
     
-    return utils.pickRandom(typeMoves);
-  },
-  
-  history(grid, ch) {
-    return Object.keys(moves).reduce((history, moveType) => {
-      history[moveType] = [];
-      
-      for(let cell of moves[moveType]) {
-        let _ch = grid[cell];
-        
-        if(_ch) {
-          if(_ch === ch) {
-            history[moveType].push(cell);
-            history.totalCh++;
-          }
-          
-          history.total++;
-        }
-      }
-      
-      return history;
-    }, {totalCh: 0, total: 0});
+    return random ? utils.pickRandom(typeMoves) : typeMoves[0];
   },
   
   intersections(grid, ch) {

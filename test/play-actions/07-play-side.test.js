@@ -13,6 +13,17 @@ describe('playSide() play action', () => {
     let moves = generateUniqueMoves(playSide, grid, 'x');
     expect(moves).to.have.members([1, 3, 5, 7]);
   });
+
+  it('picks the same side move for the same board', () => {
+    let grid = [
+      null, null, null, 
+      null, null, null,
+      null, null, null
+    ];
+
+    let moves = generateUniqueMoves(playSide, grid, 'x', false);
+    expect(moves).to.deep.equal([1]);
+  });
   
   it('returns undefined when there are no side moves', () => {
     let grid = [

@@ -9,6 +9,8 @@ export const wins = [
   [6, 7, 8]
 ];
 
+wins.side = [0, 1, 4, 7];
+
 export const CENTER = 4;
 
 export const opponent = {

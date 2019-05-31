@@ -77,7 +77,7 @@
         return blanks;
       }, []);
     },
-    findMoveByType: function findMoveByType(grid, ch, moveType) {
+    findMoveByType: function findMoveByType(grid, ch, moveType, random) {
       var typeMoves = moves[moveType];
       typeMoves = typeMoves.filter(function (cell) {
         return !grid[cell];
@@ -122,7 +122,7 @@
         }
       }
 
-      return utils.pickRandom(typeMoves);
+      return random ? utils.pickRandom(typeMoves) : typeMoves[0];
     },
     history: function history(grid, ch) {
       return Object.keys(moves).reduce(function (history, moveType) {
@@ -248,17 +248,9 @@
   };
 
   function checkForWinOrDraw(grid, ch) {
-    var blanks = tttUtils.blanks(grid);
     var check = {
       ch: ch
     };
-
-    if (!blanks.length) {
-      return Object.assign(check, {
-        draw: true
-      });
-    }
-
     var potentials = tttUtils.potentials(grid, ch, 3);
 
     var _potentials = _slicedToArray(potentials, 1),
@@ -267,6 +259,14 @@
     if (win) {
       return Object.assign(check, {
         win: win.cells
+      });
+    }
+
+    var blanks = tttUtils.blanks(grid);
+
+    if (!blanks.length) {
+      return Object.assign(check, {
+        draw: true
       });
     }
   }
@@ -283,19 +283,23 @@
   }
 
   function findFork(grid, ch) {
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var forks = tttUtils.intersections(grid, ch);
-    return utils.pickRandom(forks);
+    return random ? utils.pickRandom(forks) : forks[0];
   }
 
   function playSide(grid, ch) {
-    return tttUtils.findMoveByType(grid, ch, 'sides');
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    return tttUtils.findMoveByType(grid, ch, 'sides', random);
   }
 
   function playCorner(grid, ch) {
-    return tttUtils.findMoveByType(grid, ch, 'corners');
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    return tttUtils.findMoveByType(grid, ch, 'corners', random);
   }
 
   function blockForks(grid, ch) {
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var intersections = tttUtils.intersections(grid, ch);
     var length = intersections.length;
     var allForksCorners = intersections.every(function (fork) {
@@ -305,18 +309,16 @@
     if (length === 1) {
       return intersections[0];
     } else if (length === 2 && allForksCorners) {
-      return playSide(grid, ch);
+      return playSide(grid, ch, random);
     } else if (length >= 2 && !allForksCorners) {
-      return playCorner(grid, ch);
+      return playCorner(grid, ch, random);
     }
   }
 
   function playCenter(grid, ch) {
     var history = tttUtils.history(grid, opponent[ch]);
 
-    if (history.total === 1 && !grid[CENTER]) {
-      return CENTER;
-    }
+    if (history.total >= 1 && !grid[CENTER]) ;
   }
 
   function playOppositeCorner(grid, ch) {
@@ -354,13 +356,15 @@
     }
   }
 
-  function pickRandomMove(grid) {
+  function pickRandomMove(grid, ch) {
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var blanks = tttUtils.blanks(grid);
-    return utils.pickRandom(blanks);
+    return random ? utils.pickRandom(blanks) : blanks[0];
   }
 
   function ttt(grid, ch) {
-    var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 9;
+    var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var level = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 9;
     var playActions = [checkForWinOrDraw, determineWinningMove, determineWinningMove, findFork, blockForks, playCenter, playOppositeCorner, playCorner, playSide];
     var actionsToPlayAsOpponent = [2, 4].map(function (id) {
       return id >= level ? id++ : id;
@@ -381,7 +385,7 @@
 
         var _ch = actionsToPlayAsOpponent.includes(index) ? opponent[ch] : ch;
 
-        var move = playAction(_grid, _ch);
+        var move = playAction(_grid, _ch, random);
 
         if (move === undefined) {
           continue;

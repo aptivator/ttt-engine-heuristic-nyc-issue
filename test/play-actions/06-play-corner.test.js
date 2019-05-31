@@ -13,6 +13,17 @@ describe('playCorner() action', () => {
     let moves = generateUniqueMoves(playCorner, grid, 'x');
     expect(moves).to.have.members([0, 2, 6, 8]);
   });
+
+  it('selects the same corner move for the same board', () => {
+    let grid = [
+      null, null, null,
+      null, null, null,
+      null, null, null
+    ];
+    
+    let moves = generateUniqueMoves(playCorner, grid, 'x', false);
+    expect(moves).to.deep.equal([0]);
+  });
   
   it('selects a random corner move to complete a random potential if available', () => {
     let grid = [

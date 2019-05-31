@@ -1,9 +1,8 @@
-import tttUtils                            from '../_lib/ttt-utils';
-import {opponent, CENTER, oppositeCorners} from '../_lib/vars';
+import {opponent, CENTER, oppositeCorners, moves} from '../_lib/vars';
 
 export function playOppositeCorner(grid, ch) {
   if(grid[CENTER] === opponent[ch]) {
-    let {corners} = tttUtils.history(grid, ch);
+    let corners = moves.corners.filter(corner => grid[corner] === ch);
     
     for(let corner of corners) {
       let opposite = oppositeCorners[corner];

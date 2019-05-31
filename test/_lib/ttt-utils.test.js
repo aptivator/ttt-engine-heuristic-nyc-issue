@@ -21,7 +21,7 @@ describe('tic-tac-toe utilities library', () => {
       null, null, null
     ];
     
-    let move = tttUtils.findMoveByType(grid, 'x', 'corners');
+    let move = tttUtils.findMoveByType(grid, 'x', 'corners', true);
     expect(move).to.equal(6);
   });
   
@@ -33,11 +33,23 @@ describe('tic-tac-toe utilities library', () => {
     ];
     
     let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
-    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'corners');
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'corners', true);
     expect(moves).to.have.members([2, 6]);
   });
+
+  it('fetches the same corner move when there is no win', () => {
+    let grid = [
+      'x', 'o', null,
+      'o', null, null,
+      null, 'x', 'o'
+    ];
+    
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'corners', false);
+    expect(moves).to.deep.equal([2]);
+  });
   
-  it('gets corner move that could allow for a win', () => {
+  it('gets a random side move that could allow for a win', () => {
     let grid = [
       null, null, 'x',
       null, 'o', null,
@@ -45,11 +57,11 @@ describe('tic-tac-toe utilities library', () => {
     ];
     
     let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
-    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides');
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides', true);
     expect(moves).to.have.members([1, 5]);
   });
   
-  it('finds a corner when when there is no win', () => {
+  it('finds a side move when when there is no win', () => {
     let grid = [
       'x', null, 'o',
       'o', null, 'x',
@@ -57,25 +69,20 @@ describe('tic-tac-toe utilities library', () => {
     ];
     
     let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
-    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides');
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides', true);
     expect(moves).to.have.members([1, 7]);
   });
   
-  it('generates moves metadata for a board', () => {
+  it('picks the same side move', () => {
     let grid = [
-      'x', 'o', null,
-      'o', null, null,
-      null, null, null
+      'x', null, 'o',
+      'o', null, 'x',
+      'x', null, 'o'
     ];
     
-    let history = tttUtils.history(grid, 'o');
-    expect(history).to.deep.equal({
-      sides: [1, 3],
-      corners: [],
-      center: [],
-      total: 3,
-      totalCh: 2
-    });
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'sides', false);
+    expect(moves).to.deep.equal([1]);    
   });
   
   it('determines blank intersections among one-move potentials', () => {
