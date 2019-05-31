@@ -12,23 +12,30 @@ export default {
     }, []);
   },
   
-  findMoveByType(grid, ch, moveType, random) {
+  findMoveByType(grid, ch, moveType, random, preferSideWins = false) {
     let {[moveType]: typeMoves} = moves;
     typeMoves = typeMoves.filter(cell => !grid[cell]);
 
     if(typeMoves.length) {
       let potentials = this.potentials(grid, ch, 1);
-      let movesInOnes = potentials.reduce((movesInOnes, potential) => {
-        for(var cell of typeMoves) {
-          if(potential.blanks.includes(cell)) {
-            movesInOnes.add(cell);
-            break;
+      let sidePotentials = potentials.filter(potential => potential.side);
+      let nonSidePotentials = potentials.filter(potential => !potential.side);
+      let movesInOnes = new Set();
+      
+      for(let potentials of [sidePotentials, nonSidePotentials]) {
+        potentials.forEach(potential => {
+          for(let cell of typeMoves) {
+            if(potential.blanks.includes(cell)) {
+              movesInOnes.add(cell);
+              break;
+            }
           }
-        }
+        });
         
-        return movesInOnes;
-      }, new Set());
-
+        if(movesInOnes.size && preferSideWins) {
+          break;
+        }
+      }
 
       if(movesInOnes.size) {
         typeMoves = Array.from(movesInOnes);
@@ -72,7 +79,7 @@ export default {
   },
   
   potentials(grid, ch, level) {
-    outerLoop: for(var i = 0, potentials = []; i < 8; i++) {
+    winsLoop: for(var i = 0, potentials = []; i < 8; i++) {
       for(var j = 0, count = 0, blanks = [], taken = []; j < 3; j++) {
         let cell = wins[i][j];
         let _ch = grid[cell];
@@ -81,7 +88,7 @@ export default {
           count++;
           taken.push(cell);
         } else if(_ch) {
-          continue outerLoop;
+          continue winsLoop;
         } else {
           blanks.push(cell);
         }
@@ -91,7 +98,8 @@ export default {
         potentials.push({
           cells: wins[i].slice(),
           blanks,
-          taken
+          taken,
+          side: wins.side.includes(i)
         });
       }
     }

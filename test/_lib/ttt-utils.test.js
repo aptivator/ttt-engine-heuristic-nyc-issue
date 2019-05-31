@@ -85,6 +85,18 @@ describe('tic-tac-toe utilities library', () => {
     expect(moves).to.deep.equal([1]);    
   });
   
+  it('selects only corner moves or a potential side win', () => {
+    let grid = [
+      'x', null, null,
+      null, null, null,
+      null, 'o', null
+    ];
+    
+    let findMoveByType = tttUtils.findMoveByType.bind(tttUtils);
+    let moves = generateUniqueMoves(findMoveByType, grid, 'x', 'corners', true, true);
+    expect(moves).to.have.members([2, 6]);
+  });
+  
   it('determines blank intersections among one-move potentials', () => {
     let grid = [
       'o', null, null,
@@ -115,8 +127,8 @@ describe('tic-tac-toe utilities library', () => {
     
     let potentials = tttUtils.potentials(grid, 'x', 1);
     expect(potentials).to.deep.equal([
-      {blanks: [3, 6], taken: [0], cells: [0, 3, 6]},
-      {blanks: [6, 8], taken: [7], cells: [6, 7, 8]}
+      {blanks: [3, 6], taken: [0], cells: [0, 3, 6], side: true},
+      {blanks: [6, 8], taken: [7], cells: [6, 7, 8], side: true}
     ]);
   });
 });

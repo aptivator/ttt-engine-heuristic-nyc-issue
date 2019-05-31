@@ -6,7 +6,7 @@ describe('ttt() engine entrypoint', () => {
   it('accepts grid as a string', () => {
     let grid = 'ox       ';
     let moves = generateUniqueMoves(ttt, grid, 'o');
-    expect(moves).to.have.members([6, 8]);
+    expect(moves).to.have.members([6]);
   });
   
   it('assesses an existing win', () => {
@@ -128,6 +128,17 @@ describe('ttt() engine entrypoint', () => {
     
     let moves = generateUniqueMoves(ttt, grid, 'x');
     expect(moves).to.have.members([0, 2, 6, 8]);
+  });
+  
+  it('selects corners of potential side wins', () => {
+    let grid = [
+      null, 'o', null,
+      null, null, null,
+      null, null, 'x'
+    ];
+    
+    let moves = generateUniqueMoves(ttt, grid, 'x');
+    expect(moves).to.have.members([2, 6]);    
   });
   
   it('chooses a random side when nothing else is available', () => {
