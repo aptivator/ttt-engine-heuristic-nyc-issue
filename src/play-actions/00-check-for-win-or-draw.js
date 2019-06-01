@@ -1,17 +1,18 @@
-import tttUtils from '../_lib/ttt-utils';
+import {opponent} from '../_lib/vars';
+import tttUtils   from '../_lib/ttt-utils';
 
-export function checkForWinOrDraw(grid, ch) {
-  let check = {ch};
-  let potentials = tttUtils.potentials(grid, ch, 3);
-  let [win] = potentials;
-  
-  if(win) {
-    return Object.assign(check, {win: win.cells});
+export function checkForWinOrDraw(board, ch) {
+  for(let ch of [ch, opponent[ch]]) {
+    let [win] = tttUtils.potentials(board, ch, 3);
+    
+    if(win) {
+      return {ch, win: win.cells};
+    }
   }
   
-  let blanks = tttUtils.blanks(grid);
+  let blanks = tttUtils.blanks(board);
   
   if(!blanks.length) {
-    return Object.assign(check, {draw: true});
+    return {draw: true};
   }
 }

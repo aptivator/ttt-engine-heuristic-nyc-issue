@@ -3,18 +3,7 @@ import {expect} from 'chai';
 import {ttt}    from '../src';
 
 describe('two-player game simulation', () => {
-  it('plays', () => {
-    let board = [
-      null, 'x', null,
-      null, null, null,
-      null, null, 'o'
-    ];
-    
-    let {move} = ttt(board, 'o');
-    console.log(move);
-  }), 
-  
-  it('perfect player beats lower-level player and perfect players draw', () => {
+  it('plays perfect player to beat lower-level player and to draw perfect players', () => {
     let results = {
       o: {},
       x: {}
@@ -51,9 +40,7 @@ describe('two-player game simulation', () => {
         }
       }
     }
-    
-    console.log(results);
-    
+
     expect(results.x[1].wins).to.be.above(results.o[1].wins);
     expect(results.x[8].wins).to.equal(0);
     expect(results.o[8].wins).to.equal(0);

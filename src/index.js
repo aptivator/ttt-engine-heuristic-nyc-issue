@@ -10,7 +10,7 @@ import {playCorner}           from './play-actions/06-play-corner';
 import {playSide}             from './play-actions/07-play-side';
 import {pickRandomMove}       from './play-actions/08-pick-random-move';
 
-export function ttt(grid, ch, random = true, level = 9) {
+export function ttt(board, ch, random = true, level = 9) {
   let playActions = [
     checkForWinOrDraw,
     determineWinningMove,
@@ -25,10 +25,10 @@ export function ttt(grid, ch, random = true, level = 9) {
 
   let actionsToPlayAsOpponent = [2, 4].map(id => id >= level ? id++ : id);
   playActions.splice(level, 0, pickRandomMove);
-  grid = tttUtils.normalizeGrid(grid);
+  board = tttUtils.normalizeGrid(board);
   
   for(let [index, playAction] of playActions.entries()) {
-    let _grid = grid.slice();
+    let _grid = board.slice();
     let _ch = actionsToPlayAsOpponent.includes(index) ? opponent[ch] : ch;
     let move = playAction(_grid, _ch, random);
     

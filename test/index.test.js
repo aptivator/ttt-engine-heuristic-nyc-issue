@@ -31,6 +31,17 @@ describe('ttt() engine entrypoint', () => {
     expect(move).to.deep.equal({move: 8, ch: 'o', win: [0, 4, 8]});
   });
   
+  it('detects a draw', () => {
+    let grid = [
+      'x', 'o', 'x',
+      'o', 'o', 'x',
+      'x', 'x', null
+    ];
+    
+    let move = ttt(grid, 'o');
+    expect(move).to.deep.equal({ch: 'o', draw: true, move: 8});
+  });
+  
   it(`it blocks an opponent's winning move`, () => {
     let grid = [
       'o', null, null,

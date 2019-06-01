@@ -14,17 +14,6 @@ describe('findFork() play action', () => {
     expect(moves).to.have.members([2, 5]);
   });
   
-  it('finds another fork', () => {
-    let board = [
-      'x', null, 'o',
-      'o', null, null,
-      'x', null, null
-    ];
-    
-    let move = findFork(board, 'x', false);
-    console.log(move);
-  });
-  
   it('picks the same fork move for the same board', () => {
     let grid = [
       'o', null, null,
