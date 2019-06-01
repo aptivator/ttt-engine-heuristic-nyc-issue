@@ -136,7 +136,7 @@ let play = ttt(board, 'x');
 ```
 
 4. Selects a winning move.  (In this case, a `move` variable is included, because
-UI or other interface may need to know where to place a winning character).
+UI or other interface will need to know where to place a winning character).
 
 ```js
 let board = [
