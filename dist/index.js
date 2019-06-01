@@ -43,6 +43,7 @@
   }
 
   var wins = [[0, 1, 2], [0, 3, 6], [0, 4, 8], [1, 4, 7], [2, 5, 8], [2, 4, 6], [3, 4, 5], [6, 7, 8]];
+  wins.side = [0, 1, 4, 7];
   var CENTER = 4;
   var opponent = {
     'x': 'o',
@@ -78,72 +79,89 @@
       }, []);
     },
     findMoveByType: function findMoveByType(grid, ch, moveType, random) {
+      var _this = this;
+
+      var preferSideWins = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
       var typeMoves = moves[moveType];
       typeMoves = typeMoves.filter(function (cell) {
         return !grid[cell];
       });
 
       if (typeMoves.length) {
-        var potentials = this.potentials(grid, ch, 1);
-        var movesInOnes = potentials.reduce(function (movesInOnes, potential) {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
+        (function () {
+          var potentials = _this.potentials(grid, ch, 1);
 
-          try {
-            for (var _iterator = typeMoves[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var cell = _step.value;
+          var sidePotentials = potentials.filter(function (potential) {
+            return potential.side;
+          });
+          var nonSidePotentials = potentials.filter(function (potential) {
+            return !potential.side;
+          });
+          var movesInOnes = new Set();
 
-              if (potential.blanks.includes(cell)) {
-                movesInOnes.add(cell);
-                break;
+          for (var _i = 0, _arr = [sidePotentials, nonSidePotentials]; _i < _arr.length; _i++) {
+            var _potentials = _arr[_i];
+
+            _potentials.forEach(function (potential) {
+              var _iteratorNormalCompletion = true;
+              var _didIteratorError = false;
+              var _iteratorError = undefined;
+
+              try {
+                for (var _iterator = typeMoves[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  var cell = _step.value;
+
+                  if (potential.blanks.includes(cell)) {
+                    movesInOnes.add(cell);
+                    break;
+                  }
+                }
+              } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                    _iterator["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError) {
+                    throw _iteratorError;
+                  }
+                }
               }
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                _iterator["return"]();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
+            });
+
+            if (movesInOnes.size && preferSideWins) {
+              break;
             }
           }
 
-          return movesInOnes;
-        }, new Set());
-
-        if (movesInOnes.size) {
-          typeMoves = Array.from(movesInOnes);
-        }
+          if (movesInOnes.size) {
+            typeMoves = Array.from(movesInOnes);
+          }
+        })();
       }
 
       return random ? utils.pickRandom(typeMoves) : typeMoves[0];
     },
-    history: function history(grid, ch) {
-      return Object.keys(moves).reduce(function (history, moveType) {
-        history[moveType] = [];
+    intersections: function intersections(grid, ch) {
+      var potentials = this.potentials(grid, ch, 1);
+      var cellCounts = potentials.reduce(function (cellCounts, potential) {
+        var blanks = potential.blanks;
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator2 = moves[moveType][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var cell = _step2.value;
-            var _ch = grid[cell];
+          for (var _iterator2 = blanks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var blank = _step2.value;
 
-            if (_ch) {
-              if (_ch === ch) {
-                history[moveType].push(cell);
-                history.totalCh++;
-              }
-
-              history.total++;
+            if (!cellCounts[blank]) {
+              cellCounts[blank] = 0;
             }
+
+            cellCounts[blank]++;
           }
         } catch (err) {
           _didIteratorError2 = true;
@@ -156,45 +174,6 @@
           } finally {
             if (_didIteratorError2) {
               throw _iteratorError2;
-            }
-          }
-        }
-
-        return history;
-      }, {
-        totalCh: 0,
-        total: 0
-      });
-    },
-    intersections: function intersections(grid, ch) {
-      var potentials = this.potentials(grid, ch, 1);
-      var cellCounts = potentials.reduce(function (cellCounts, potential) {
-        var blanks = potential.blanks;
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
-
-        try {
-          for (var _iterator3 = blanks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var blank = _step3.value;
-
-            if (!cellCounts[blank]) {
-              cellCounts[blank] = 0;
-            }
-
-            cellCounts[blank]++;
-          }
-        } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-              _iterator3["return"]();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
             }
           }
         }
@@ -219,7 +198,7 @@
       return grid;
     },
     potentials: function potentials(grid, ch, level) {
-      outerLoop: for (var i = 0, potentials = []; i < 8; i++) {
+      winsLoop: for (var i = 0, potentials = []; i < 8; i++) {
         for (var j = 0, count = 0, blanks = [], taken = []; j < 3; j++) {
           var cell = wins[i][j];
           var _ch = grid[cell];
@@ -228,7 +207,7 @@
             count++;
             taken.push(cell);
           } else if (_ch) {
-            continue outerLoop;
+            continue winsLoop;
           } else {
             blanks.push(cell);
           }
@@ -238,7 +217,8 @@
           potentials.push({
             cells: wins[i].slice(),
             blanks: blanks,
-            taken: taken
+            taken: taken,
+            side: wins.side.includes(i)
           });
         }
       }
@@ -247,27 +227,28 @@
     }
   };
 
-  function checkForWinOrDraw(grid, ch) {
-    var check = {
-      ch: ch
-    };
-    var potentials = tttUtils.potentials(grid, ch, 3);
+  function checkForWinOrDraw(board, ch) {
+    for (var _i = 0, _arr = [ch, opponent[ch]]; _i < _arr.length; _i++) {
+      var _ch = _arr[_i];
 
-    var _potentials = _slicedToArray(potentials, 1),
-        win = _potentials[0];
+      var _tttUtils$potentials = tttUtils.potentials(board, _ch, 3),
+          _tttUtils$potentials2 = _slicedToArray(_tttUtils$potentials, 1),
+          win = _tttUtils$potentials2[0];
 
-    if (win) {
-      return Object.assign(check, {
-        win: win.cells
-      });
+      if (win) {
+        return {
+          ch: _ch,
+          win: win.cells
+        };
+      }
     }
 
-    var blanks = tttUtils.blanks(grid);
+    var blanks = tttUtils.blanks(board);
 
     if (!blanks.length) {
-      return Object.assign(check, {
+      return {
         draw: true
-      });
+      };
     }
   }
 
@@ -295,7 +276,7 @@
 
   function playCorner(grid, ch) {
     var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-    return tttUtils.findMoveByType(grid, ch, 'corners', random);
+    return tttUtils.findMoveByType(grid, ch, 'corners', random, true);
   }
 
   function blockForks(grid, ch) {
@@ -316,16 +297,20 @@
   }
 
   function playCenter(grid, ch) {
-    var history = tttUtils.history(grid, opponent[ch]);
+    var gridWithoutNulls = grid.filter(function (ch) {
+      return ch;
+    });
 
-    if (history.total >= 1 && !grid[CENTER]) ;
+    if (gridWithoutNulls.length === 1 && !grid[CENTER]) {
+      return CENTER;
+    }
   }
 
   function playOppositeCorner(grid, ch) {
     if (grid[CENTER] === opponent[ch]) {
-      var _tttUtils$history = tttUtils.history(grid, ch),
-          corners = _tttUtils$history.corners;
-
+      var corners = moves.corners.filter(function (corner) {
+        return grid[corner] === ch;
+      });
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -362,7 +347,7 @@
     return random ? utils.pickRandom(blanks) : blanks[0];
   }
 
-  function ttt(grid, ch) {
+  function ttt(board, ch) {
     var random = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var level = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 9;
     var playActions = [checkForWinOrDraw, determineWinningMove, determineWinningMove, findFork, blockForks, playCenter, playOppositeCorner, playCorner, playSide];
@@ -370,7 +355,7 @@
       return id >= level ? id++ : id;
     });
     playActions.splice(level, 0, pickRandomMove);
-    grid = tttUtils.normalizeGrid(grid);
+    board = tttUtils.normalizeGrid(board);
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -381,7 +366,7 @@
             index = _step$value[0],
             playAction = _step$value[1];
 
-        var _grid = grid.slice();
+        var _grid = board.slice();
 
         var _ch = actionsToPlayAsOpponent.includes(index) ? opponent[ch] : ch;
 
