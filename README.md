@@ -6,7 +6,8 @@ The engine implements a heuristic tic-tac-toe strategy and  can mimic a perfect
 player or various levels of an imperfect player.  The strategy was "borrowed"
 and slightly modified from an existing [approach]().  The library was written 
 for educational purposes and its construction is described in detail in my book 
-[JavaScript by Application: Tic-Tac-Toe 9 Ways]().
+[JavaScript by Application: Tic-Tac-Toe 9 Ways]().  The code base for the engine
+is [js-seed-library](https://github.com/aptivator/js-library-seed).
 
 ### Installation
 
@@ -22,7 +23,7 @@ npm install --save npm install git+https://git@github.com/aptivator/ttt-engine-h
 
 ### Usage
 
-#### Engine Inputs
+##### Engine Inputs
 
 The library accepts the following parameters (in that order):
 
@@ -41,7 +42,7 @@ is to perform.  A value of `1` sets the engine to play randomly.  Increasing
 this setting increases the library's performance all the way to a perfect player 
 (a value of `9`, which is also default).
 
-#### Engine Inputs Example
+##### Engine Inputs Example
 
 ```js
 import {ttt} from 'ttt-engine-heuristic';
@@ -67,7 +68,7 @@ play = ttt(board, 'x', false);
 play = ttt(board, 'x', true, 1);
 ```
 
-#### Engine Output
+##### Engine Output
 
 The library returns an object with the following possible properties:
 
@@ -77,7 +78,11 @@ positioned
 * `win` - a 3-cell array of indices that represents a win (e.g., `[0, 1, 2]`, `[0, 3, 6]`)
 * `draw` - a boolean flag indicating a draw
 
-#### Examples
+##### Examples
+
+The following cases exemplify the type of values included in the engine's output. 
+The information provided in a play selection should free a UI or other interface 
+from tracking a game state.
 
 1. Picks a random best move (an index in a 9-cell board array) and
 indicates what character (`x` or `o`) to place there.
@@ -116,8 +121,8 @@ let play = ttt(board, 'x', false);
 */
 ```
 
-3. Finds an opponent's win.  (There is no need to include a `move` property in 
-the result.  The `ch` is included in case UI may need that).
+3. Finds an opponent's win.  (There is no need to include `move` property in 
+the result.  `ch` is included in case UI may need that).
 
 ```js
 let board = [
@@ -135,8 +140,9 @@ let play = ttt(board, 'x');
 */
 ```
 
-4. Selects a winning move.  (In this case, a `move` variable is included, because
-UI or other interface will need to know where to place a winning character).
+4. Selects a winning move.  (In this case, `move` and `ch` variables are 
+included, because UI or other interface will need to know where to place a 
+winning character).
 
 ```js
 let board = [
