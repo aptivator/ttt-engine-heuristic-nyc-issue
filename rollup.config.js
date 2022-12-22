@@ -1,6 +1,8 @@
-import babel from 'rollup-plugin-babel';
-let packageJson = require('./package.json');
-let {'jsnext:main': jsnext, main, name} = packageJson;
+import pick                from 'lodash.pick';
+import babel               from '@rollup/plugin-babel';
+import generatePackageJson from 'rollup-plugin-generate-package-json'
+
+let {main, module, name} = require('./package.json');
 
 export default {
   input: 'src/index.js',
@@ -10,10 +12,21 @@ export default {
     name
   }, {
     format: 'es',
-    file: jsnext,
+    file: module,
     name
   }],
   plugins: [
-    babel()
+    babel({babelHelpers: 'bundled'}),
+    generatePackageJson({
+      baseContents(packageJson) {
+        let fields = ['name', 'version', 'description', 'repository', 'dependencies', 'peerDependencies'];
+        let _package = pick(packageJson, fields);
+
+        return Object.assign(_package, {
+          main: main.replace('dist/', ''),
+          module: module.replace('dist/', '')
+        });
+      }
+    })
   ]
 };

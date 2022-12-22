@@ -65,7 +65,7 @@ let play = ttt(board, 'x');
 play = ttt(board, 'x', false);
 
 /* select a random move at the lowest level of performance */
-play = ttt(board, 'x', true, 1);
+play = ttt(board, 'x', true, 0);
 ```
 
 ##### Engine Output
@@ -122,7 +122,7 @@ let play = ttt(board, 'x', false);
 ```
 
 3. Finds an opponent's win.  (There is no need to include `move` property in 
-the result.  `ch` is included in case UI may need that).
+the result.  `ch` is included in case a UI may need that).
 
 ```js
 let board = [

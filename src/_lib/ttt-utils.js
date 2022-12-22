@@ -1,109 +1,108 @@
-import {wins, moves} from './vars';
-import utils         from './utils';
+import {pickRandomElement} from './utils';
+import {moves, wins}       from './vars';
 
-export default {
-  blanks(grid) {
-    return grid.reduce((blanks, ch, index) => {
-      if(!ch) {
-        blanks.push(index);
-      }
-      
-      return blanks;
-    }, []);
-  },
-  
-  findMoveByType(grid, ch, moveType, random, preferSideWins = false) {
-    let {[moveType]: typeMoves} = moves;
-    typeMoves = typeMoves.filter(cell => !grid[cell]);
+export function findMoveByType(board, ch, moveType, random, preferSideWins = false) {
+  let {[moveType]: typeMoves} = moves;
+  typeMoves = typeMoves.filter((cell) => !board[cell]);
 
-    if(typeMoves.length) {
-      let potentials = this.potentials(grid, ch, 1);
-      let sidePotentials = potentials.filter(potential => potential.side);
-      let nonSidePotentials = potentials.filter(potential => !potential.side);
-      let movesInOnes = new Set();
-      
-      for(let potentials of [sidePotentials, nonSidePotentials]) {
-        potentials.forEach(potential => {
-          for(let cell of typeMoves) {
-            if(potential.blanks.includes(cell)) {
-              movesInOnes.add(cell);
-              break;
-            }
+  if(typeMoves.length) {
+    let potentialWins = getPotentialWins(board, ch, 1);
+    let sidePotentialWins = potentialWins.filter((potentialWin) => potentialWin.sideWin);
+    let nonSidePotentialWins = potentialWins.filter((potentialWin) => !potentialWin.sideWin);
+    let movesInOnes = new Set();
+    
+    for(let potentialWins of [sidePotentialWins, nonSidePotentialWins]) {
+      potentialWins.forEach((potentialWin) => {
+        for(let cell of typeMoves) {
+          if(potentialWin.blanks.includes(cell)) {
+            movesInOnes.add(cell);
+            break;
           }
-        });
-        
-        if(movesInOnes.size && preferSideWins) {
-          break;
         }
+      });
+      
+      if(movesInOnes.size && preferSideWins) {
+        break;
+      }
+    }
+
+    if(movesInOnes.size) {
+      typeMoves = Array.from(movesInOnes);
+    }
+  }
+  
+  return random ? pickRandomElement(typeMoves) : typeMoves[0];
+}
+
+export function getBlankIndices(board) {
+  for(var i = 0, blanks = [], {length} = board; i < length; i++) {
+    if(!board[i]) {
+      blanks.push(i);
+    }  
+  }
+
+  return blanks;
+}
+
+export function getIntersectionsOfPotentialWins(board, ch) {
+  let potentialWins = getPotentialWins(board, ch, 1);
+  let cellCounts = potentialWins.reduce((cellCounts, {blanks}) => {
+    for(let blank of blanks) {
+      cellCounts[blank] ??= 0;
+      cellCounts[blank]++;
+    }
+    
+    return cellCounts;
+  }, {});
+
+  return Object.entries(cellCounts).reduce((intersections, [blankIndex, cellCount]) => {
+    if(cellCount > 1) {
+      intersections.push(+blankIndex);
+    }
+
+    return intersections;
+  }, []);
+}
+
+export function getPotentialWins(board, ch, requiredNumberOfOccupiedCells) {
+  winsLoop: 
+  for(var i = 0, potentialWins = []; i < wins.length; i++) {
+    let {cells, sideWin} = wins[i];
+
+    for(var j = 0, numberOfOccupiedCells = 0, blanks = [], taken = []; j < cells.length; j++) {
+      let cell = cells[j];
+      let _ch = board[cell];
+
+      if(_ch === ch) {
+        numberOfOccupiedCells++;
+        taken.push(cell);
+        continue;
+      } 
+
+      if(_ch) {
+        continue winsLoop;
       }
 
-      if(movesInOnes.size) {
-        typeMoves = Array.from(movesInOnes);
-      }
+      blanks.push(cell);
     }
     
-    return random ? utils.pickRandom(typeMoves) : typeMoves[0];
-  },
-  
-  intersections(grid, ch) {
-    let potentials = this.potentials(grid, ch, 1);
-    let cellCounts = potentials.reduce((cellCounts, potential) => {
-      let {blanks} = potential;
-      
-      for(let blank of blanks) {
-        if(!cellCounts[blank]) {
-          cellCounts[blank] = 0;
-        }
-        
-        cellCounts[blank]++;
-      }
-      
-      return cellCounts;
-    }, {});
-    
-    return Object.keys(cellCounts).reduce((intersections, blank) => {
-      if(cellCounts[blank] > 1) {
-        intersections.push(+blank);
-      }
-      
-      return intersections;
-    }, []);
-  },
-  
-  normalizeGrid(grid) {
-    if(!Array.isArray(grid)) {
-      grid = grid.split('').map(ch => ch === ' ' ? null : ch);
+    if(numberOfOccupiedCells === requiredNumberOfOccupiedCells) {
+      potentialWins.push({
+        cells: cells.slice(),
+        blanks,
+        taken,
+        sideWin
+      });
     }
-    
-    return grid;
-  },
-  
-  potentials(grid, ch, level) {
-    winsLoop: for(var i = 0, potentials = []; i < 8; i++) {
-      for(var j = 0, count = 0, blanks = [], taken = []; j < 3; j++) {
-        let cell = wins[i][j];
-        let _ch = grid[cell];
-        
-        if(_ch === ch) {
-          count++;
-          taken.push(cell);
-        } else if(_ch) {
-          continue winsLoop;
-        } else {
-          blanks.push(cell);
-        }
-      }
-      
-      if(count === level) {
-        potentials.push({
-          cells: wins[i].slice(),
-          blanks,
-          taken,
-          side: wins.side.includes(i)
-        });
-      }
-    }
-    
-    return potentials;
   }
-};
+  
+  return potentialWins;
+}
+
+export function normalizeBoard(board) {
+  if(typeof board === 'string') {
+    board = board.split('').map((ch) => ch === ' ' ? null : ch); 
+  }
+
+  return board;
+}

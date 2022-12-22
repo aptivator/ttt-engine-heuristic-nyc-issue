@@ -10,7 +10,7 @@ describe('two-player game simulation', () => {
     };
     let even = _.partial(ttt, _, 'x');
     
-    for(let level = 1; level < 10; level++) {
+    for(let level = 0; level < 11; level++) {
       let odd = _.partial(ttt, _, 'o', true, level);
       
       results.x[level] = {wins: 0};
@@ -41,8 +41,9 @@ describe('two-player game simulation', () => {
       }
     }
 
-    expect(results.x[1].wins).to.be.above(results.o[1].wins);
-    expect(results.x[8].wins).to.equal(0);
-    expect(results.o[8].wins).to.equal(0);
+    expect(results.x[0].wins).to.be.above(results.o[0].wins);
+    expect(results.x[5].wins).to.be.above(results.o[5].wins);
+    expect(results.x[10].wins).to.equal(0);
+    expect(results.o[10].wins).to.equal(0);
   });
 });
